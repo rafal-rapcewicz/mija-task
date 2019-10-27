@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MaterialModule } from '../material/material.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { TaskComponent } from './task.component';
 
@@ -10,6 +11,8 @@ describe('TaskComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ 
+        FormsModule,
+        ReactiveFormsModule,
         MaterialModule
        ],
       declarations: [ TaskComponent ]
@@ -20,10 +23,19 @@ describe('TaskComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TaskComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    component.task = {
+      id: 1,
+      imageName: 'mockImageName',
+      name: 'mockName',
+      description: 'mockDescription',
+      isOpen: true
+    };
+
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 });

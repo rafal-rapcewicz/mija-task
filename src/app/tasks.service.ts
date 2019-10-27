@@ -76,7 +76,7 @@ export class TasksService {
           {
             [position]: {
               ...tasks[position],
-              isOpen: changedTask.isOpen
+              ...changedTask
             }
           });
       }),
