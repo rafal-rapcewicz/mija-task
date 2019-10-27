@@ -1,0 +1,25 @@
+:host-context {
+    display: block;
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+mat-expansion-panel {
+    margin-bottom: 50px;
+
+    mat-form-field {
+        margin-right: 50px;
+    }
+}
+
+.tasks {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    app-task {
+        margin-right: 50px;
+        margin-bottom: 50px;
+    }
+}

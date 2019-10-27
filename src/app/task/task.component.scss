@@ -3,6 +3,9 @@
 }
 
 .task-header-image {
-  background-image: url("../../assets/images/28674222645_a1b417d35c_b.jpg");
   background-size: cover;
+}
+
+mat-card-content {
+    min-height: 100px;
 }

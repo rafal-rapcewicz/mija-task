@@ -1,8 +1,29 @@
 <header>
-  <h2>{{ title }}</h2>
+  <h1>{{ title }}</h1>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Filter
+      </mat-panel-title>
+      <mat-panel-description>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <form [formGroup]="form">
+      <mat-form-field>
+        <input matInput formControlName="phrase" placeholder="Phrase">
+      </mat-form-field>
+
+      <app-tri-state-checkbox formControlName="isOpen">Is open</app-tri-state-checkbox>
+    </form>
+  </mat-expansion-panel>
+
 </header>
 <main>
-  <app-task></app-task>
+  <div class="tasks">
+    <app-task [task]="task" *ngFor="let task of tasks$ | async"></app-task>
+  </div>
 </main>
 
 <!-- <router-outlet></router-outlet> -->

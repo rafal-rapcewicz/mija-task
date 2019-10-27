@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MatCardModule } from '@angular/material/card';
+import { MaterialModule } from './material/material.module';
 
 import { AppComponent } from './app.component';
 import { TaskComponent } from './task/task.component';
@@ -13,7 +13,7 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
-        MatCardModule
+        MaterialModule
       ],
       declarations: [
         TaskComponent,

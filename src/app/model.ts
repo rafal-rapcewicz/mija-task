@@ -4,3 +4,5 @@ export interface Task {
     description: string;
     isOpen: boolean;
 }
+
+export type Prediction<T> = (entity: T) => boolean;
