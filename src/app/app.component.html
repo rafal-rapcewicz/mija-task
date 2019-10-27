@@ -22,7 +22,7 @@
 </header>
 <main>
   <div class="tasks">
-    <app-task [task]="task" *ngFor="let task of tasks$ | async"></app-task>
+    <app-task [task]="task" (changed)="onTaskChanged($event)" *ngFor="let task of tasks$ | async"></app-task>
   </div>
 </main>
 

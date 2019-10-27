@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import * as _ from 'lodash';
 
 import { Task, Prediction } from './model';
 
@@ -38,12 +39,16 @@ export const getMockInitialTasks = (): Task[] => {
     .split('.')
     .slice(0, taskImageNames.length)
     .map((sentence, index) => ({
+      id: index,
       imageName: taskImageNames[index],
       name: sentence.trim().split(' ').slice(0, 2).join(' '),
       description: `${sentence}.`,
       isOpen: true
     }));
 };
+
+const ensureInitialData = (tasks: Task[]): Task[] =>
+  tasks || getMockInitialTasks();
 
 @Injectable({
   providedIn: 'root'
@@ -54,8 +59,32 @@ export class TasksService {
 
   get(condition?: Prediction<Task>): Observable<Task[]> {
     return this.storage.get(key).pipe(
-      map<any, Task[]>(value => value || getMockInitialTasks()),
+      map<any, Task[]>(ensureInitialData),
       map(tasks => condition ? tasks.filter(condition) : tasks)
     ) as Observable<Task[]>;
+  }
+
+  update(changedTask: Task): Observable<Task[]> {
+    return this.storage.get(key).pipe(
+      map(ensureInitialData),
+      map((tasks: Task[]) => {
+        const position = _.findIndex(tasks, task => task.id === changedTask.id);
+        
+        return Object.assign(
+          [],
+          tasks,
+          {
+            [position]: {
+              ...tasks[position],
+              isOpen: changedTask.isOpen
+            }
+          });
+      }),
+      switchMap((updatedTasks: Task[]) =>
+        this.storage.set(key, updatedTasks).pipe(
+          map(() => updatedTasks)
+        )
+      )
+    );
   }
 }

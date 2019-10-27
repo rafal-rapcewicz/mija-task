@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 import { Task } from '../model';
 
@@ -8,10 +9,14 @@ import { Task } from '../model';
   templateUrl: './task.component.html',
   styleUrls: ['./task.component.scss']
 })
-export class TaskComponent implements OnInit {
+export class TaskComponent implements OnInit, OnDestroy {
 
   @Input() task: Task;
+  @Output() changed = new EventEmitter<Task>();
+
   isOpen: FormControl;
+
+  private subscriptions: Subscription[] = [];
 
   get imagePath(): string {
     return `../../assets/images/${this.task.imageName}.png`;
@@ -21,6 +26,17 @@ export class TaskComponent implements OnInit {
 
   ngOnInit() {
     this.isOpen = new FormControl(this.task.isOpen);
+
+    this.subscriptions.push(
+      this.isOpen.valueChanges.subscribe(value => this.changed.emit({
+        ...this.task,
+        isOpen: value
+      }))
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
 }

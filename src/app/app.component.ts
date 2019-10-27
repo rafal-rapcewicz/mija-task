@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable, merge } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Observable, merge, Subject, Subscription } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { TasksService } from './tasks.service';
@@ -32,10 +32,13 @@ const getCondition = (filter: Filter): Prediction<Task> => {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   readonly title = 'Mija Task';
   form: FormGroup;
   tasks$: Observable<Task[]>;
+  tasksChanged$: Subject<Task[]> = new Subject();
+
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -47,16 +50,27 @@ export class AppComponent implements OnInit {
 
     this.tasks$ = merge(
       this.tasksService.get(),
-      this.form.get('phrase').valueChanges.pipe(
+      this.form.valueChanges.pipe(
         switchMap(value => this.tasksService.get(
-          getCondition({
-            phrase: value,
-            isOpen: this.form.get('isOpen').value
-          })))
+          getCondition(value)))
+      ),
+      this.tasksChanged$.pipe(
+        map(changedTasks => changedTasks.filter(
+          getCondition(this.form.value)
+        ))
       )
     );
+  }
 
-    this.tasks$.subscribe(x => console.log(`tasks$: ${JSON.stringify(x)}`))
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  onTaskChanged(changedTask: Task) {
+    this.subscriptions.push(
+      this.tasksService.update(changedTask).subscribe(updatedTasks =>
+        this.tasksChanged$.next(updatedTasks))
+    )
   }
 
   private setupForm() {

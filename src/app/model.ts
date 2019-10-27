@@ -1,4 +1,5 @@
 export interface Task {
+    id: number;
     imageName: string;
     name: string;
     description: string;
